@@ -15,6 +15,7 @@ import jp.masahiro.ooe.sample.java.java8.bean.TestChildBean;
 
 public class StreamAPITest {
 
+	@Test
 	public void testSumBigDecimal() throws Exception {
 		TestChildBean chldBean = new TestChildBean();
 		chldBean.setTestNumList(new ArrayList<BigDecimal>());
@@ -42,9 +43,11 @@ public class StreamAPITest {
 		testBean.setBeanList(new ArrayList<TestChildBean>());
 		testBean.getBeanList().add(chldBean);
 
+		// TODO そのうち暇になったら続きは書く
 		// 会員情報Beanから家族会員のリストの何かを合計したい。
 		Object mapList = testBean.getBeanList().stream()
 				.collect(Collectors.toMap(TestBean::getId, Function.identity()));
+
 	}
 
 	@Test
