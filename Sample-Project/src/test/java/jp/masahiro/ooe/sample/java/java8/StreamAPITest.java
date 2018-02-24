@@ -1,5 +1,7 @@
 package jp.masahiro.ooe.sample.java.java8;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -9,8 +11,41 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import jp.masahiro.ooe.sample.java.java8.bean.TestBean;
+import jp.masahiro.ooe.sample.java.java8.bean.TestChildBean;
 
 public class StreamAPITest {
+
+	public void testSumBigDecimal() throws Exception {
+		TestChildBean chldBean = new TestChildBean();
+		chldBean.setTestNumList(new ArrayList<BigDecimal>());
+
+		chldBean.getTestNumList().add(BigDecimal.TEN);
+		chldBean.getTestNumList().add(BigDecimal.ONE);
+		chldBean.getTestNumList().add(BigDecimal.ONE);
+		chldBean.getTestNumList().add(BigDecimal.ZERO);
+
+		// リストの合計BigDecimalの場合
+		BigDecimal sumTest = chldBean.getTestNumList().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		// 何かの合計を一律加算した合計
+		BigDecimal sumTest2 = chldBean.getTestNumList().stream().reduce(sumTest, BigDecimal::add);
+
+		// 普通の数値の合計
+		List<Integer> intList = new ArrayList<Integer>();
+		intList.add(10);
+		intList.add(1);
+		intList.add(1);
+		intList.add(0);
+		chldBean.setIntList(intList);
+
+		TestBean testBean = new TestBean();
+		testBean.setBeanList(new ArrayList<TestChildBean>());
+		testBean.getBeanList().add(chldBean);
+
+		// 会員情報Beanから家族会員のリストの何かを合計したい。
+		Object mapList = testBean.getBeanList().stream()
+				.collect(Collectors.toMap(TestBean::getId, Function.identity()));
+	}
 
 	@Test
 	public void test1() throws Exception {
