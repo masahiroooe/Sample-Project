@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,13 +41,12 @@ public class StreamAPITest {
 		chldBean.setIntList(intList);
 
 		TestBean testBean = new TestBean();
-		testBean.setBeanList(new ArrayList<TestChildBean>());
 		testBean.getBeanList().add(chldBean);
 
 		// TODO そのうち暇になったら続きは書く
 		// 会員情報Beanから家族会員のリストの何かを合計したい。
-		Object mapList = testBean.getBeanList().stream()
-				.collect(Collectors.toMap(TestBean::getId, Function.identity()));
+		Map<String, TestChildBean> mapList = testBean.getBeanList().stream()
+				.collect(Collectors.toMap(TestChildBean::getValueStr, Function.identity()));
 
 	}
 
