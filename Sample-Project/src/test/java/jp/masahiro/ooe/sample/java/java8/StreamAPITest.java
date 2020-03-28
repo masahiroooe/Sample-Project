@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.junit.Test;
 
@@ -16,11 +18,14 @@ import jp.masahiro.ooe.sample.java.java8.bean.TestChildBean;
 
 public class StreamAPITest {
 
+	private ObjectMapper om = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+	
 	@Test
 	public void testSumBigDecimal() throws Exception {
 		TestChildBean chldBean = new TestChildBean();
-		chldBean.setTestNumList(new ArrayList<BigDecimal>());
 
+		chldBean.setTestNum(BigDecimal.ONE);
+		chldBean.setTestNumList(new ArrayList<BigDecimal>());
 		chldBean.getTestNumList().add(BigDecimal.TEN);
 		chldBean.getTestNumList().add(BigDecimal.ONE);
 		chldBean.getTestNumList().add(BigDecimal.ONE);
@@ -32,6 +37,8 @@ public class StreamAPITest {
 		// 何かの合計を一律加算した合計
 		BigDecimal sumTest2 = chldBean.getTestNumList().stream().reduce(sumTest, BigDecimal::add);
 
+		System.out.println(sumTest2.toPlainString());
+
 		// 普通の数値の合計
 		List<Integer> intList = new ArrayList<Integer>();
 		intList.add(10);
@@ -41,12 +48,25 @@ public class StreamAPITest {
 		chldBean.setIntList(intList);
 
 		TestBean testBean = new TestBean();
+		testBean.setId(BigDecimal.TEN.toString());
 		testBean.getBeanList().add(chldBean);
 
 		// TODO そのうち暇になったら続きは書く
 		// 会員情報Beanから家族会員のリストの何かを合計したい。
+		System.out.println("-- BEAN OUT START --");
 		Map<String, TestChildBean> mapList = testBean.getBeanList().stream()
 				.collect(Collectors.toMap(TestChildBean::getValueStr, Function.identity()));
+
+		mapList.entrySet().stream().forEach(a -> {
+			System.out.println("key=" + a.getKey() + ":value=");
+			try{
+				om.writeValueAsString(a.getValue());
+			} catch(Exception e) {
+				System.out.println(e.getMessage());
+
+			}
+		});
+		System.out.println("-- BEAN OUT END --\n");
 
 	}
 
@@ -111,6 +131,12 @@ public class StreamAPITest {
 				.map(map -> map.getId()).collect(Collectors.toList());
 
 		retList.stream().forEach(System.out::println);
+
+		Map<String, Integer> map = retList.stream().distinct().collect(Collectors.toList()).stream()
+				.collect(Collectors.toMap(a -> a, a -> a.length()));
+		map.entrySet().stream().forEach(a -> {
+			System.out.println("key=" + a.getKey() + ":value=" + a.getValue());
+		});
 
 	}
 
